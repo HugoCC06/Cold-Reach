@@ -241,7 +241,9 @@
           <option value="PE">Private Equity</option>
           <option value="VC">Venture Capital</option>
           <option value="RE">Real Estate Dev</option>
-          <option value="FI">Finance / Other</option>
+          <option value="FI">Finance</option>
+          <option value="FS">Fashion</option>
+        <option value="OT">Other</option>
         </select>
       </div>
       <div class="field full"><label>Email</label><input id="f-email" type="text" placeholder="e.g. cgarcia@arcano.com"></div>
@@ -264,7 +266,7 @@
 
 <script>
 let contacts = [];
-try { contacts = JSON.parse(localStorage.getItem('madrid_outreach_v2') || '[]'); } catch(e){}
+try { contacts = JSON.parse(localStorage.getItem('cold_outreach_v2') || '[]'); } catch(e){}
 let editId = null;
 
 const ssClass = {
@@ -273,7 +275,7 @@ const ssClass = {
 };
 
 function persist() {
-  try { localStorage.setItem('madrid_outreach_v2', JSON.stringify(contacts)); } catch(e){}
+  try { localStorage.setItem('cold_outreach_v2', JSON.stringify(contacts)); } catch(e){}
 }
 
 function render() {
