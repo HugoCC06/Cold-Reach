@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Madrid Outreach Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #f0ede8;
+    --text2: #8a8780;
+    --text3: #555451;
+    --accent: #c8f060;
+    --accent-dim: rgba(200,240,96,0.12);
+    --red: #ff5c5c;
+    --red-dim: rgba(255,92,92,0.12);
+    --blue: #5ca8ff;
+    --blue-dim: rgba(92,168,255,0.12);
+    --purple: #b97fff;
+    --purple-dim: rgba(185,127,255,0.12);
+    --amber: #ffb347;
+    --amber-dim: rgba(255,179,71,0.12);
+    --teal: #4dd9ac;
+    --teal-dim: rgba(77,217,172,0.12);
+    --gray-dim: rgba(255,255,255,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; }
+
+  /* LAYOUT */
+  .app { display: grid; grid-template-rows: auto auto 1fr; min-height: 100vh; }
+
+  /* HEADER */
+  header { padding: 2rem 2.5rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+  .header-left h1 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+  .header-left h1 span { color: var(--accent); }
+  .header-left p { color: var(--text2); font-size: 12px; margin-top: 4px; letter-spacing: 0.04em; }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+
+  /* STATS */
+  .stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border-bottom: 1px solid var(--border); }
+  .stat { padding: 1.1rem 1.5rem; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-value.accent { color: var(--accent); }
+
+  /* CONTROLS */
+  .controls { padding: 1rem 2.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background: var(--surface); }
+  input[type="text"], select {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, select:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--text3); }
+  #searchBox { width: 240px; }
+  .spacer { flex: 1; }
+  .btn { font-family: 'DM Mono', monospace; font-size: 12px; padding: 7px 16px; border-radius: 6px; border: 1px solid var(--border2); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .btn-ghost { background: transparent; color: var(--text2); }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .btn-primary { background: var(--accent); color: #0e0e0f; border-color: var(--accent); font-weight: 500; }
+  .btn-primary:hover { background: #d8ff70; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; padding: 0 2.5rem 2.5rem; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+  thead th { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 400; }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text2); }
+  tbody td.name-cell { color: var(--text); font-weight: 500; }
+  tbody tr:hover td { background: var(--surface2); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* BADGES */
+  .badge { display: inline-block; font-size: 10px; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
+  .badge-HF { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(185,127,255,0.2); }
+  .badge-PE { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(92,168,255,0.2); }
+  .badge-VC { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(77,217,172,0.2); }
+  .badge-RE { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,179,71,0.2); }
+  .badge-FI { background: var(--gray-dim); color: var(--text2); border: 1px solid var(--border2); }
+
+  /* STATUS SELECT */
+  .status-sel { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-weight: 500; outline: none; appearance: none; -webkit-appearance: none; }
+  .ss-notstarted { background: var(--gray-dim); color: var(--text3); }
+  .ss-drafted { background: var(--amber-dim); color: var(--amber); }
+  .ss-sent { background: var(--blue-dim); color: var(--blue); }
+  .ss-replied { background: var(--teal-dim); color: var(--teal); }
+  .ss-interview { background: var(--accent-dim); color: var(--accent); }
+  .ss-rejected { background: var(--red-dim); color: var(--red); }
+  .ss-ghosted { background: var(--gray-dim); color: var(--text3); }
+
+  /* DELETE */
+  .del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; padding: 0 4px; line-height: 1; transition: color 0.15s; }
+  .del-btn:hover { color: var(--red); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text3); }
+  .empty-state .big { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text2); margin-bottom: 8px; }
+
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+  .modal-bg.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 2rem; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .modal-header h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; }
+  .modal-close { background: none; border: none; color: var(--text3); font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid .full { grid-column: 1/-1; }
+  .field label { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border2); color: var(--text);
+    font-family: 'DM Mono', monospace; font-size: 12px; padding: 8px 10px; border-radius: 6px; outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--text3); }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
+
+  /* EXPORT */
+  .export-note { font-size: 11px; color: var(--text3); margin-top: 1.5rem; text-align: center; letter-spacing: 0.02em; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* EMAIL LINK */
+  a.mail-link { color: var(--blue); text-decoration: none; }
+  a.mail-link:hover { text-decoration: underline; }
+
+  @media (max-width: 700px) {
+    header { padding: 1.2rem; flex-direction: column; align-items: flex-start; }
+    .stats-bar { grid-template-columns: repeat(3, 1fr); }
+    .stat:nth-child(4), .stat:nth-child(5) { border-top: 1px solid var(--border); }
+    .controls { padding: 0.75rem 1rem; }
+    .table-wrap { padding: 0 1rem 2rem; }
+    #searchBox { width: 100%; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-left">
+      <h1>Madrid <span>Outreach</span></h1>
+      <p>Cold email tracker · HF · PE · VC · Real Estate · Finance</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="exportCSV()">↓ Export CSV</button>
+      <button class="btn btn-primary" onclick="openModal()">+ Add contact</button>
+    </div>
+  </header>
+
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div>
+    <div class="controls">
+      <input type="text" id="searchBox" placeholder="Search name, company, role…" oninput="render()">
+      <select id="filterSector" onchange="render()">
+        <option value="">All sectors</option>
+        <option value="HF">Hedge Fund</option>
+        <option value="PE">Private Equity</option>
+        <option value="VC">Venture Capital</option>
+        <option value="RE">Real Estate</option>
+        <option value="FI">Finance / Other</option>
+      </select>
+      <select id="filterStatus" onchange="render()">
+        <option value="">All statuses</option>
+        <option value="Not started">Not started</option>
+        <option value="Drafted">Drafted</option>
+        <option value="Sent">Sent</option>
+        <option value="Replied">Replied</option>
+        <option value="Interview">Interview</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Ghosted">Ghosted</option>
+      </select>
+      <div class="spacer"></div>
+      <span id="countLabel" style="color:var(--text3);font-size:11px;letter-spacing:0.04em;"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="mainTable">
+        <thead>
+          <tr>
+            <th style="width:14%">Name</th>
+            <th style="width:16%">Company</th>
+            <th style="width:13%">Role</th>
+            <th style="width:9%">Sector</th>
+            <th style="width:19%">Email</th>
+            <th style="width:13%">Status</th>
+            <th style="width:9%">Date sent</th>
+            <th style="width:6%">Notes</th>
+            <th style="width:1%"></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div class="big">No contacts yet</div>
+        <div>Hit "+ Add contact" to start tracking your outreach</div>
+      </div>
+      <div class="export-note" id="exportNote" style="display:none">
+        Data is saved in your browser's local storage — it persists between sessions on this device.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add contact</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Name</label><input id="f-name" type="text" placeholder="e.g. Carlos García"></div>
+      <div class="field"><label>Company</label><input id="f-company" type="text" placeholder="e.g. Arcano Partners"></div>
+      <div class="field"><label>Role / Title</label><input id="f-role" type="text" placeholder="e.g. Associate"></div>
+      <div class="field"><label>Sector</label>
+        <select id="f-sector">
+          <option value="HF">Hedge Fund</option>
+          <option value="PE">Private Equity</option>
+          <option value="VC">Venture Capital</option>
+          <option value="RE">Real Estate Dev</option>
+          <option value="FI">Finance / Other</option>
+        </select>
+      </div>
+      <div class="field full"><label>Email</label><input id="f-email" type="text" placeholder="e.g. cgarcia@arcano.com"></div>
+      <div class="field full"><label>LinkedIn URL</label><input id="f-linkedin" type="text" placeholder="linkedin.com/in/…"></div>
+      <div class="field"><label>Status</label>
+        <select id="f-status">
+          <option>Not started</option><option>Drafted</option><option>Sent</option>
+          <option>Replied</option><option>Interview</option><option>Rejected</option><option>Ghosted</option>
+        </select>
+      </div>
+      <div class="field"><label>Date sent</label><input id="f-date" type="date"></div>
+      <div class="field full"><label>Notes</label><textarea id="f-notes" placeholder="Mutual connections, follow-up reminders, how you found them…"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveContact()">Save contact</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let contacts = [];
+try { contacts = JSON.parse(localStorage.getItem('madrid_outreach_v2') || '[]'); } catch(e){}
+let editId = null;
+
+const ssClass = {
+  'Not started':'ss-notstarted','Drafted':'ss-drafted','Sent':'ss-sent',
+  'Replied':'ss-replied','Interview':'ss-interview','Rejected':'ss-rejected','Ghosted':'ss-ghosted'
+};
+
+function persist() {
+  try { localStorage.setItem('madrid_outreach_v2', JSON.stringify(contacts)); } catch(e){}
+}
+
+function render() {
+  const q = (document.getElementById('searchBox').value||'').toLowerCase();
+  const fs = document.getElementById('filterSector').value;
+  const fst = document.getElementById('filterStatus').value;
+
+  let list = contacts.filter(c => {
+    const mq = !q || [c.name,c.company,c.role,c.email,c.notes].some(v => v && v.toLowerCase().includes(q));
+    const ms = !fs || c.sector === fs;
+    const mst = !fst || c.status === fst;
+    return mq && ms && mst;
+  });
+
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  const expNote = document.getElementById('exportNote');
+
+  if (contacts.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    expNote.style.display = 'none';
+  } else {
+    empty.style.display = 'none';
+    expNote.style.display = 'block';
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:2rem">No matches for current filters</td></tr>`;
+    } else {
+      tbody.innerHTML = list.map(c => {
+        const sc = ssClass[c.status] || 'ss-notstarted';
+        const emailCell = c.email ? `<a class="mail-link" href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '—';
+        const notesTip = c.notes ? `title="${esc(c.notes)}"` : '';
+        const notesCell = c.notes ? `<span style="color:var(--accent);cursor:default" ${notesTip}>●</span>` : '—';
+        const linkedinCell = c.linkedin ? `<a class="mail-link" href="${esc(c.linkedin)}" target="_blank" title="${esc(c.linkedin)}">↗</a>` : '';
+        return `<tr ondblclick="openModal('${c.id}')">
+          <td class="name-cell" title="${esc(c.name||'')}">${esc(c.name)||'—'} ${linkedinCell}</td>
+          <td title="${esc(c.company||'')}">${esc(c.company)||'—'}</td>
+          <td title="${esc(c.role||'')}">${esc(c.role)||'—'}</td>
+          <td><span class="badge badge-${c.sector||'FI'}">${c.sector||'—'}</span></td>
+          <td style="max-width:160px">${emailCell}</td>
+          <td>
+            <select class="status-sel ${sc}" onchange="changeStatus('${c.id}',this)">
+              ${['Not started','Drafted','Sent','Replied','Interview','Rejected','Ghosted'].map(s=>`<option value="${s}"${s===c.status?' selected':''}>${s}</option>`).join('')}
+            </select>
+          </td>
+          <td>${c.dateSent||'—'}</td>
+          <td style="text-align:center">${notesCell}</td>
+          <td><button class="del-btn" onclick="deleteContact('${c.id}')" title="Delete">×</button></td>
+        </tr>`;
+      }).join('');
+    }
+  }
+
+  document.getElementById('countLabel').textContent = list.length + ' of ' + contacts.length + ' contact' + (contacts.length!==1?'s':'');
+  renderStats();
+}
+
+function renderStats() {
+  const total = contacts.length;
+  const sent = contacts.filter(c => ['Sent','Replied','Interview','Rejected','Ghosted'].includes(c.status)).length;
+  const replied = contacts.filter(c => ['Replied','Interview'].includes(c.status)).length;
+  const interviews = contacts.filter(c => c.status === 'Interview').length;
+  const rate = sent > 0 ? Math.round(replied/sent*100) : 0;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><div class="stat-label">Total contacts</div><div class="stat-value">${total}</div></div>
+    <div class="stat"><div class="stat-label">Emails sent</div><div class="stat-value">${sent}</div></div>
+    <div class="stat"><div class="stat-label">Replies</div><div class="stat-value">${replied}</div></div>
+    <div class="stat"><div class="stat-label">Interviews</div><div class="stat-value accent">${interviews}</div></div>
+    <div class="stat"><div class="stat-label">Reply rate</div><div class="stat-value">${rate}%</div></div>
+  `;
+}
+
+function changeStatus(id, sel) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  c.status = sel.value;
+  if (sel.value === 'Sent' && !c.dateSent) c.dateSent = new Date().toISOString().slice(0,10);
+  sel.className = 'status-sel ' + (ssClass[c.status]||'ss-notstarted');
+  persist(); renderStats();
+}
+
+function deleteContact(id) {
+  if (!confirm('Delete this contact?')) return;
+  contacts = contacts.filter(x => x.id !== id);
+  persist(); render();
+}
+
+function openModal(id) {
+  editId = id || null;
+  document.getElementById('modalTitle').textContent = id ? 'Edit contact' : 'Add contact';
+  if (id) {
+    const c = contacts.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('f-name').value = c.name||'';
+    document.getElementById('f-company').value = c.company||'';
+    document.getElementById('f-role').value = c.role||'';
+    document.getElementById('f-sector').value = c.sector||'HF';
+    document.getElementById('f-email').value = c.email||'';
+    document.getElementById('f-linkedin').value = c.linkedin||'';
+    document.getElementById('f-status').value = c.status||'Not started';
+    document.getElementById('f-date').value = c.dateSent||'';
+    document.getElementById('f-notes').value = c.notes||'';
+  } else {
+    ['f-name','f-company','f-role','f-email','f-linkedin','f-notes','f-date'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-sector').value = 'HF';
+    document.getElementById('f-status').value = 'Not started';
+  }
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+
+function saveContact() {
+  const name = document.getElementById('f-name').value.trim();
+  const company = document.getElementById('f-company').value.trim();
+  if (!name && !company) { alert('Please enter at least a name or company.'); return; }
+  const c = {
+    id: editId || Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name, company,
+    role: document.getElementById('f-role').value.trim(),
+    sector: document.getElementById('f-sector').value,
+    email: document.getElementById('f-email').value.trim(),
+    linkedin: document.getElementById('f-linkedin').value.trim(),
+    status: document.getElementById('f-status').value,
+    dateSent: document.getElementById('f-date').value,
+    notes: document.getElementById('f-notes').value.trim()
+  };
+  if (editId) {
+    const i = contacts.findIndex(x => x.id === editId);
+    if (i > -1) contacts[i] = c;
+  } else {
+    contacts.push(c);
+  }
+  persist(); closeModal(); render();
+}
+
+function exportCSV() {
+  if (contacts.length === 0) { alert('No contacts to export yet.'); return; }
+  const headers = ['Name','Company','Role','Sector','Email','LinkedIn','Status','Date Sent','Notes'];
+  const rows = contacts.map(c => [c.name,c.company,c.role,c.sector,c.email,c.linkedin,c.status,c.dateSent,c.notes].map(v => `"${(v||'').replace(/"/g,'""')}"`));
+  const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'madrid_outreach_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+document.getElementById('modalBg').addEventListener('click', e => { if (e.target === document.getElementById('modalBg')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+render();
+</script>
+</body>
+</html>
